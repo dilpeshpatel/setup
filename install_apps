@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# Script to install apps
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+    exit
+fi
+
+#get apps from each list
+mapfile -t appsArray < apps_list
+apps="${appsArray[@]}"
+
+mapfile -t multiArray < apps_multiverse
+multi="${multiArray[@]}"
+
+mapfile -t ppaArray < apps_ppa
+ppa="${ppaArray[@]}"
+
+mapfile -t rosArray < apps_ros
+ros="${rosArray[@]}"
+
+
+# add ppas
+mapfile -t ppaRepos < ppa_list
+
+for item in "${ppaRepos[@]}"
+do
+	apt-add-repository -y ppa:$item
+done
+
+# enable multiverse
+add-apt-repository multiverse
+
+# Prepare apps 
+
+## dropbox
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
+## virtualbox
+release=$(lsb_release -sc)
+apt-add-repository "deb http://download.virtualbox.org/virtualbox/debian $release contrib"
+wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+
+## Sublime 3
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key
+add -
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee
+/etc/apt/sources.list.d/sublime-text.list
+
+## Rambox
+
+#wget -qO rambox.AppImage https://getrambox.herokuapp.com/download/x64?filetype=AppImage 
+#chmod u+x rambox.AppImage
+#./rambox.AppImage
+
+# installing programs
+apt update
+apt dist-upgrade
+
+apt install -y $apps
+
+## VS Code (requires curl installed)
+sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+
+apt install -y $multi
+apt install -y $ppa
+apt install -y $ros
+
+# Nvidia
+driver=sudo ubuntu-drivers devices |  sed -n 's/.*\(nvidia.[0-9][0-9][0-9].\).*/\1/p'
+
+apt install -y $driver
+
+
+# Gnome
+if [ "$XDG_CURRENT_DESKTOP" = "" ]
+then
+  desktop=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/')
+else
+  desktop=$XDG_CURRENT_DESKTOP
+fi
+
+desktop=${desktop,,}  # convert to lower case
+
+if [$desktop ="gnome"]
+then
+	## weather indicator
+	add-apt-repository ppa:kasra-mp/ubuntu-indicator-weather
+	apt install indicator-weather
+fi
+
+ret=$?; times; exit "$ret"

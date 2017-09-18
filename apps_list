@@ -1,0 +1,14 @@
+build-essential
+imagemagick
+libreoffice
+redshift
+redshift-gtk
+vlc
+vim
+zim
+conky-all
+nmap
+software-properties-common
+gparted
+curl
+cairo-dock

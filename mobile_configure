@@ -1,0 +1,25 @@
+#!/bin/bash
+# Setup for the ASUS K501 laptop post install
+# My current default is to rely on Ubuntu which directly supports ROS.
+
+
+# Created by Dilpesh Patel
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
+# variables
+asusWifi="/etc/modprobe.d/asus-wifi.conf"
+
+# Enable wifi configuration
+if [ ! -f $asusWifi ]; then
+    touch $asusWifi
+    echo "options asus_nb_wmi wapf=1" > $asusWifi
+    echo "Please configure wifi connection now"
+    exit 2 #2 denotes wifi can be configured
+fi
+
+echo "Wifi already configured"
+exit 1 # normal exit
