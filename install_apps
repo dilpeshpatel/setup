@@ -49,15 +49,13 @@ add -
 echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee
 /etc/apt/sources.list.d/sublime-text.list
 
-## Rambox
-
-#wget -qO rambox.AppImage https://getrambox.herokuapp.com/download/x64?filetype=AppImage 
-#chmod u+x rambox.AppImage
-#./rambox.AppImage
+## Git Kraken
+wget https://release.gitkraken.com/linux/gitkraken-amd64.deb
+dpkg -i gitkraken-amd64.deb
 
 # installing programs
 apt update
-apt dist-upgrade
+apt dist-upgrade -y
 
 apt install -y $apps
 
@@ -66,31 +64,17 @@ sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode s
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 
-apt install -y $multi
-apt install -y $ppa
-apt install -y $ros
-
 # Nvidia
 driver=sudo ubuntu-drivers devices |  sed -n 's/.*\(nvidia.[0-9][0-9][0-9].\).*/\1/p'
 
 apt install -y $driver
 
+# Install
+apt install -y $multi
+apt install -y $ppa
+apt install -y $ros
 
-# Gnome
-if [ "$XDG_CURRENT_DESKTOP" = "" ]
-then
-  desktop=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/')
-else
-  desktop=$XDG_CURRENT_DESKTOP
-fi
-
-desktop=${desktop,,}  # convert to lower case
-
-if [$desktop ="gnome"]
-then
-	## weather indicator
-	add-apt-repository ppa:kasra-mp/ubuntu-indicator-weather
-	apt install indicator-weather
-fi
+# Snap
+sudo snap install atom
 
 ret=$?; times; exit "$ret"

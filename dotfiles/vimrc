@@ -1,0 +1,22 @@
+" Created: 2016-10-12
+
+" a relatively basic auto indent system
+set autoindent
+
+" Whitespace
+set wrap
+set textwidth=79
+"set formatoptions=tcqrn1
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+"set noshiftround
+
+colorscheme gruvbox
+
+
+" 2017-03-06 update
+" For syntax highlighting yaml inside roslaunch xml files
+autocmd BufRead,BufNewFile *.launch setfiletype roslaunch
+

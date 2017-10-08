@@ -1,5 +1,4 @@
 build-essential
-imagemagick
 libreoffice
 redshift
 redshift-gtk
@@ -8,6 +7,7 @@ vim
 zim
 conky-all
 nmap
+git
 software-properties-common
 gparted
 curl
